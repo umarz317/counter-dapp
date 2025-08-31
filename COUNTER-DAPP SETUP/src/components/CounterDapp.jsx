@@ -10,8 +10,6 @@ const CounterDApp = () => {
 
     const { open, close } = useAppKit();
 
-    const [result, setResult] = useState(null)
-
     const { isConnected, address } = useAccount();
 
     const { data: currentCount } = useReadContract({
@@ -20,38 +18,6 @@ const CounterDApp = () => {
         functionName: 'get',
         chainId: anvil.id
     })
-
-    const { writeContractAsync } = useWriteContract();
-
-    const handleIncDec = async (isInc) => {
-        try {
-            const tx = await writeContractAsync({
-                abi: constants.counterABI,
-                address: constants.counterAddress,
-                functionName: isInc ? "inc" : "dec",
-                args: []
-            })
-            const receipt = await publicClient.waitForTransactionReceipt({
-                hash: tx
-            })
-            if (receipt.status = "success") {
-                setResult({
-                    status: "success"
-                })
-            }
-            else {
-                setResult({
-                    status: 'reverted'
-                })
-            }
-        }
-        catch (e) {
-            console.log('Error', e.message)
-            setResult({
-                status: "error"
-            })
-        }
-    }
 
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -134,15 +100,6 @@ const CounterDApp = () => {
                                 </button>
                             </div>
 
-                            {/* Status */}
-                            {result && (
-                                <div className={`${result.status === "success" ? 'bg-green-50 border-green-200' : "bg-red-50 border-red-200"} border rounded-xl p-4`} >
-                                    <div className={`flex items-center gap-2 ${result.status === "success" ? 'text-green-700' : "text-red-700"}`}>
-                                        <Check size={16} />
-                                        <span className="font-medium">Transaction {result.status}</span>
-                                    </div>
-                                </div>
-                            )}
 
                             {/* Connection Required Message */}
                             {!isConnected && (
